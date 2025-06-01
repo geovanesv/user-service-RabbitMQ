@@ -1,26 +1,50 @@
 import { Injectable } from '@nestjs/common';
-import { CreateMessagingDto } from './dto/create-messaging.dto';
-import { UpdateMessagingDto } from './dto/update-messaging.dto';
+import * as amqp from 'amqplib';
 
 @Injectable()
 export class MessagingService {
-  create(createMessagingDto: CreateMessagingDto) {
-    return 'This action adds a new messaging';
+  private connection: amqp.Connection;
+  private channel: amqp.Channel;
+
+  async onModuleInit() {
+    await this.connect();
   }
 
-  findAll() {
-    return `This action returns all messaging`;
+  private async connect() {
+    try {
+      this.connection = await amqp.connect('amqp://rabbitmq:5672');
+      this.channel = await this.connection.createChannel();
+
+      // Declarar exchange
+      await this.channel.assertExchange('user_events', 'topic', {
+        durable: true,
+      });
+
+      console.log('Connected to RabbitMQ from User Service');
+    } catch (error) {
+      console.error('Failed to connect to RabbitMQ:', error);
+      setTimeout(() => this.connect(), 5000);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} messaging`;
-  }
+  async publishUserCreated(userData: {
+    userId: string;
+    email: string;
+    name: string;
+  }) {
+    const message = {
+      event: 'user.created',
+      data: userData,
+      timestamp: new Date().toISOString(),
+    };
 
-  update(id: number, updateMessagingDto: UpdateMessagingDto) {
-    return `This action updates a #${id} messaging`;
-  }
+    await this.channel.publish(
+      'user_events',
+      'user.created',
+      Buffer.from(JSON.stringify(message)),
+      { persistent: true },
+    );
 
-  remove(id: number) {
-    return `This action removes a #${id} messaging`;
+    console.log('Published user.created event:', userData);
   }
 }
