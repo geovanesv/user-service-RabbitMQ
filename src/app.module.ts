@@ -5,6 +5,7 @@ import { PassportModule } from '@nestjs/passport';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { MessagingModule } from './messaging/messaging.module';
+import { BackendserviceModule } from './backendservice/backendservice.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { MessagingModule } from './messaging/messaging.module';
     UserModule,
     AuthModule,
     MessagingModule,
+    BackendserviceModule,
   ],
 })
 export class AppModule {}

@@ -28,7 +28,7 @@ export class MessagingService {
   }
 
   async publishUserCreated(userData: {
-    userId: string;
+    userId: number;
     email: string;
     name: string;
   }) {

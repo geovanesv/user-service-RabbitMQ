@@ -41,11 +41,10 @@ export class UserService {
 
     const savedUser = await this.userRepository.save(user);
 
-    // Enviar mensagem para outros serviços
     await this.messagingService.publishUserCreated({
       userId: savedUser.id,
       email: savedUser.email,
-      name: savedUser.name,
+      name: savedUser.nome,
     });
 
     return savedUser;
@@ -59,7 +58,7 @@ export class UserService {
     return user;
   }
 
-  async findById(id: string): Promise<UserEntity> {
+  async findById(id: number): Promise<UserEntity> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException('User not found');
