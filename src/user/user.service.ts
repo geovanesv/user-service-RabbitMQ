@@ -12,7 +12,7 @@ import { MessagingService } from '../messaging/messaging.service';
 export interface CreateUserDto {
   email: string;
   password: string;
-  name: string;
+  nome: string;
 }
 
 @Injectable()
@@ -44,14 +44,17 @@ export class UserService {
     await this.messagingService.publishUserCreated({
       userId: savedUser.id,
       email: savedUser.email,
-      name: savedUser.nome,
+      nome: savedUser.nome,
     });
 
     return savedUser;
   }
 
   async findByEmail(email: string): Promise<UserEntity> {
-    const user = await this.userRepository.findOne({ where: { email } });
+    const user = await this.userRepository.findOne({
+      where: { email },
+      select: ['id', 'email', 'nome', 'password', 'ativo', 'createdAt', 'updatedAt'],
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -59,7 +62,10 @@ export class UserService {
   }
 
   async findById(id: number): Promise<UserEntity> {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({
+      where: { id },
+      select: ['id', 'email', 'nome', 'password', 'ativo', 'createdAt', 'updatedAt'],
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }

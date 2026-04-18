@@ -14,9 +14,9 @@ export class LoginDto {
 export class AuthResponseDto {
   access_token: string;
   user: {
-    id: string;
+    id: number;
     email: string;
-    name: string;
+    nome: string;
     isActive: boolean;
     createdAt: Date;
   };

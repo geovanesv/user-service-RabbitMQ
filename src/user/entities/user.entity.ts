@@ -11,7 +11,7 @@ export class UserEntity {
   @Column('character varying', { name: 'email', length: 150, unique: true })
   email: string;
 
-  @Column('character varying', { name: 'password', length: 60, select: false })
+  @Column('character varying', { name: 'password', length: 60 })
   password?: string;
 
   @Column('boolean', { name: 'ativo', default: () => 'true' })

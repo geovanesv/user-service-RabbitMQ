@@ -9,7 +9,7 @@ import { LoginDto, AuthResponseDto } from './dto/auth.dto';
 
 export interface JwtPayload {
   email: string;
-  sub: string;
+  sub: number;
   iat?: number;
   exp?: number;
 }
@@ -25,7 +25,7 @@ export class AuthService {
     try {
       const user = await this.userService.findByEmail(loginDto.email);
 
-      if (!user.isActive) {
+      if (!user.ativo) {
         throw new UnauthorizedException('Account is deactivated');
       }
 
@@ -50,8 +50,8 @@ export class AuthService {
         user: {
           id: user.id,
           email: user.email,
-          name: user.name,
-          isActive: user.isActive,
+          nome: user.nome,
+          isActive: user.ativo,
           createdAt: user.createdAt,
         },
       };
@@ -67,7 +67,7 @@ export class AuthService {
     try {
       const user = await this.userService.findByEmail(email);
 
-      if (!user.isActive) {
+      if (!user.ativo) {
         return null;
       }
 
@@ -92,7 +92,7 @@ export class AuthService {
       const payload = this.jwtService.verify(token);
       const user = await this.userService.findById(payload.sub);
 
-      if (!user || !user.isActive) {
+      if (!user || !user.ativo) {
         throw new UnauthorizedException('Invalid token');
       }
 

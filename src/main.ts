@@ -8,7 +8,8 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors();
 
-  await app.listen(3001);
-  console.log('User Service is running on port 3001');
+  const port = process.env.PORT || 3001;
+  await app.listen(port);
+  console.log(`User Service is running on port ${port}`);
 }
 bootstrap();
