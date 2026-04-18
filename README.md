@@ -105,4 +105,4 @@ RABBITMQ_URL=amqp://localhost:5672
 Este serviço publica eventos `user.created` no RabbitMQ para que outros serviços consumam.
 
 **Repositório dependente**:
-- [Order Service](https://github.com/geovanefelix/order-service) - Consome os eventos de usuário publicados por este serviço
+- [Order Service](https://github.com/geovanesv/order-service) - Consome os eventos de usuário publicados por este serviço
