@@ -1,73 +1,108 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# User Service
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Microsserviço NestJS para gerenciamento de usuários com autenticação JWT e comunicação via RabbitMQ.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tecnologias
 
-## Description
+- **Framework**: NestJS (TypeScript)
+- **Banco de Dados**: PostgreSQL (TypeORM)
+- **Mensageria**: RabbitMQ (amqplib)
+- **Autenticação**: JWT + Passport
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Funcionalidades
 
-## Installation
+### Gerenciamento de Usuários
+- Criar novo usuário
+- Buscar usuário por ID (protegido por JWT)
+- Publicação de eventos quando usuário é criado
 
-```bash
-$ npm install
+### Autenticação
+- Login com email/senha (JWT)
+- Login usando Passport
+- Validação de token JWT
+- Refresh de token
+- Logout
+- Perfil do usuário autenticado
+
+## Endpoints da API
+
+| Método | Endpoint | Descrição |
+|--------|----------|------------|
+| `POST` | `/users` | Criar novo usuário |
+| `GET` | `/users/:id` | Buscar usuário por ID |
+| `POST` | `/auth/login` | Login com email/senha |
+| `POST` | `/auth/login-passport` | Login com Passport |
+| `GET` | `/auth/profile` | Perfil do usuário |
+| `POST` | `/auth/refresh` | Atualizar token |
+| `POST` | `/auth/logout` | Logout |
+| `POST` | `/auth/validate-token` | Validar token JWT |
+
+## Esquema do Banco de Dados
+
+**Tabela: users**
+
+| Campo | Tipo | Descrição |
+|-------|------|------------|
+| id | integer | Chave primária (auto-incremento) |
+| nome | varchar(150) | Nome do usuário |
+| email | varchar(150) | Email (único) |
+| password | varchar(60) | Senha hasheada |
+| ativo | boolean | Status ativo (padrão: true) |
+| createdAt | timestamp | Data de criação |
+| updatedAt | timestamp | Data de atualização |
+
+## RabbitMQ
+
+- **Exchange**: `user_events` (topic exchange)
+- **EventoPublicado**: `user.created` - disparado quando um novo usuário é criado
+
+**Payload do Evento**:
+```json
+{
+  "event": "user.created",
+  "data": { "userId": 1, "email": "usuario@email.com", "nome": "Usuario" },
+  "timestamp": "2024-01-01T00:00:00.000Z"
+}
 ```
 
-## Running the app
+## Instalação
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Test
+## Executando a aplicação
 
 ```bash
-# unit tests
-$ npm run test
+# Desenvolvimento
+npm run start
 
-# e2e tests
-$ npm run test:e2e
+# Modo watch
+npm run start:dev
 
-# test coverage
-$ npm run test:cov
+# Produção
+npm run start:prod
 ```
 
-## Support
+## Configuração
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Configure as variáveis de ambiente no arquivo `.env`:
 
-## Stay in touch
+```
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_USER=postgres
+DATABASE_PASSWORD=senha
+DATABASE_NAME=userdb
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+JWT_SECRET=seu-secret-aqui
 
-## License
+RABBITMQ_URL=amqp://localhost:5672
+```
 
-Nest is [MIT licensed](LICENSE).
+## Integração com Order Service
+
+Este serviço publica eventos `user.created` no RabbitMQ para que outros serviços consumam.
+
+**Repositório dependente**:
+- [Order Service](https://github.com/geovanefelix/order-service) - Consome os eventos de usuário publicados por este serviço
